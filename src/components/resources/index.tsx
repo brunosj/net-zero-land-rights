@@ -1,0 +1,7 @@
+export { default as ResourceExplorer } from './ResourceExplorer'
+export { default as FiguresTab } from './FiguresTab'
+export { default as VideosTab } from './VideosTab'
+export { default as DocumentsTab } from './DocumentsTab'
+export { default as PublicationsTab } from './PublicationsTab'
+export { default as ResourceTabs } from './ResourceTabs'
+export type { ResourceTab } from './ResourceTabs'
