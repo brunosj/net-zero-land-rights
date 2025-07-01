@@ -306,6 +306,7 @@ export const FooterClient: React.FC<FooterClientProps> = ({
                         className="text-white/70 hover:text-white transition-colors "
                         target="_blank"
                         rel="noopener noreferrer"
+                        aria-label={social.platform}
                       >
                         {socialIcons[social.platform] || <div className="w-6 h-6" />}
                       </Link>

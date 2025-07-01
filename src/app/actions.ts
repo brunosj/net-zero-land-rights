@@ -193,7 +193,7 @@ export async function submitNewsletterForm(data: NewsletterFormData): Promise<Su
         JOB_TITLE: data.jobTitle || '',
         ORGANISATION: data.organization || '',
         SENIORITY_LEVEL: data.seniorityLevel,
-      }
+      } as any
 
       // Call Brevo API to create/update contact
       await apiInstance.createContact(createContact)

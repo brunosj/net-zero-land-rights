@@ -220,6 +220,11 @@ export const KeyMessagesEmbla: React.FC<KeyMessagesProps> = ({ data }) => {
                       reference={item.link?.reference}
                       color="petrol"
                       className="group inline-flex items-center"
+                      aria-label={
+                        typeof item.link?.reference?.value === 'object'
+                          ? item.link.reference.value.title || 'Read More'
+                          : 'Read More'
+                      }
                     >
                       <span className="mr-2">Read More</span>
                     </CMSLink>
