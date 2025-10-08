@@ -16,6 +16,7 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+
       - name: Execute deployment script
         env:
           HOST: ${{ secrets.HOST }}
@@ -33,20 +34,28 @@ jobs:
     if: failure()
 
     steps:
-      - name: Send Email
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: peacock.uberspace.de
-          server_port: 587
-          username: ${{ secrets.SMTP_USERNAME }}
-          password: ${{ secrets.SMTP_PASSWORD }}
-          subject: GitHub Actions - Deploy Net Zero & Land RIghts Failed
-          body: |
-            The GitHub Actions workflow 'Deploy Net Zero & Land RIghts' has failed.
-            Repository: ${{ github.repository }}
-            Workflow: ${{ github.workflow }}
-            Job: ${{ github.job }}
-            Commit: ${{ github.sha }}
-            Author: ${{ github.actor }}
-          to: contact@landozone.net
-          from: sender@landozone.net
+      - name: Send Email via Resend API
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          GITHUB_REPO: ${{ github.repository }}
+          GITHUB_WORKFLOW: ${{ github.workflow }}
+          GITHUB_JOB: ${{ github.job }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_ACTOR: ${{ github.actor }}
+        run: |
+          echo "❌ Deployment failed — sending Resend email notification..."
+          curl -X POST "https://api.resend.com/emails" \
+            -H "Authorization: Bearer ${RESEND_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"from\": \"sender@landozone.net\",
+              \"to\": [\"system@landozone.net\"],
+              \"subject\": \"GitHub Actions - Deploy Net Zero & Land Rights Failed\",
+              \"html\": \"<h3>🚨 Deployment Failed</h3>
+              The GitHub Actions workflow <b>${GITHUB_WORKFLOW}</b> has failed.<br><br>
+              <b>Repository:</b> ${GITHUB_REPO}<br>
+              <b>Job:</b> ${GITHUB_JOB}<br>
+              <b>Commit:</b> ${GITHUB_SHA}<br>
+              <b>Author:</b> ${GITHUB_ACTOR}<br><br>
+              View the full logs in <a href='https://github.com/${GITHUB_REPO}/actions'>GitHub Actions</a>.\"
+            }"
